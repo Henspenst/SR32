@@ -1,20 +1,25 @@
-instructions = """
+import argparse
+import sys
 
-loadimm r1  104
-store r1 r0 -1
 
-loadimm r1  101
-store r1 r0 -1
+def main():
+    parser = argparse.ArgumentParser(description="SR32 assembler")
+    parser.add_argument("input", help="Path to the .asm input file")
+    parser.add_argument("output", help="Path to the .bin output file")
+    args = parser.parse_args()
 
-loadimm r1  108
-store r1 r0 -1
+    try:
+        with open(args.input, "r", encoding="utf-8") as f:
+            source = f.read()
+    except OSError as e:
+        print(f"Error: Could not read '{args.input}': {e}", file=sys.stderr)
+        sys.exit(1)
 
-loadimm r1  108
-store r1 r0 -1
-
-loadimm r1  111
-store r1 r0 -1
-"""
+    tokens = tokeniser(source)
+    tokens = instructioniser(tokens)
+    tokens = labeller(tokens)
+    binary_output = binary(tokens)
+    writeFile(binary_output, args.output)
 
 aliases = {
     # ALU
@@ -220,13 +225,26 @@ def binary(tokens):
         programCounter += 4
     return output
 
-def writeFile(binary):
-    pass
+def writeFile(binary, filePath):
+    output = bytearray()
+    for address, value in binary.items():
+        if len(value) % 8 != 0:
+            raise ValueError(f"Invalid binary format at address {address}: {len(value)} bits is not a whole number of bytes")
+        numBytes = len(value) // 8
+        value = int(value, 2)
+        end = address + numBytes
+        if end > len(output):
+            output.extend(bytes(end - len(output)))
 
+        output[address:end] = value.to_bytes(numBytes, byteorder="big")
 
-tokens = tokeniser(instructions)
-tokens = instructioniser(tokens)
-tokens = labeller(tokens)
-print(tokens)
-binary = binary(tokens)
-print(binary)
+    try:
+        with open(filePath, "wb") as f:
+            f.write(output)
+            print("File written: " + filePath + str(output))
+    except OSError as e:
+        print(f"Error: Could not write '{filePath}': {e}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
