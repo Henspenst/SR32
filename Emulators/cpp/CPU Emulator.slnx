@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="CPU Emulator/CPU Emulator.vcxproj" Id="b8352b3e-d68c-41d7-9029-acd4d33a7a59" />
+</Solution>

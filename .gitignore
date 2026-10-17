@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+x64/
+Debug/
+Release/
+*.obj
+*.exe
+*.ilk
+*.pdb
+
+# PyCharm / Python
+.idea/
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
