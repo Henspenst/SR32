@@ -26,9 +26,7 @@
       - [0x05 STR](#0x05-str)
       - [0x06 SET](#0x06-set)
       - [0x07 BRA](#0x07-bra)
-  - [4 Permissions](#4-permissions)
-    - [4.1 Permission modes](#41-permission-modes)
-  - [5 Extensions](#5-extensions)
+  - [4 Extensions](#4-extensions)
 
 ## 1 Introduction
 
@@ -70,7 +68,7 @@ normative and are used to define compatibility requirements.
 ### 1.2 Reservations and Illegal instructions
 
 The isa specification has a number of reserved spaces in the opcode field and function field.
-If an instruction not supported by the specific isa implementation is attempted to executed the cpu should halt or execute a trap.
+If an instruction not supported by the specific isa implementation is attempted to executed the cpu MUST halt or execute a trap.
 
 ## 2 Architecture
 
@@ -105,8 +103,14 @@ different internal or external memory bus width, provided that the behaviour
 visible to software conforms to this specification.
 
 ### 2.2 Integer Representation
-2's compliment
-Describe here yk
+
+Register values have no given signness, each instruction and variant chose to interpret data as signed or unsigned.
+
+A two's complement integer has a value range from -2<sup>N−1</sup> to 2<sup>N−1</sup>−1.
+The most significant bit is a sign bit that indicates whether the value is negative. The negative of a value can be obtained by inverting all the bits then adding 1. This is what sign extended refers to.
+
+Integer arithmetic MUST wrap on overflow modulo 2<sup>32</sup>. Exceptions, traps or cpu halts MUST not be generated.
+
 
 ### 2.3 Registers
 
@@ -166,7 +170,7 @@ The processor MUST support the following ALU operations:
 The specification defines the required operations and their results. It does
 not require a particular internal ALU implementation.
 
-- Addition and subtraction MUST wrap around when an overflow occurs modulo 32.
+- Addition and subtraction MUST wrap around when an overflow occurs modulo 2<sup>32</sup>.
 - For shift operations, only bits 0–4 of the shift operand are used.
 - Bits 5–31 of the shift operand MUST be ignored.
 - Arithmetic shift right MUST replicate the sign bit.
@@ -180,7 +184,13 @@ defined above.
 
 ### 2.6 Control and Status Registers
 
-There are a number of control and status registers.
+Control and Status Registers (CSR's) are OPTIONAL.
+An implementation may chose to instead halt if an illegal instruction is detected.
+An implementation that does support CSR's MUST conform fully to this section.
+
+*Note: currently this section is a placeholder.*
+
+// Placeholder.
 
 ## 3 Instruction Set
 
@@ -265,7 +275,7 @@ than the normal progression of the program counter.
 | Arithmetic / Logic | `ALU` | `0x01` | A | `Rd = Rs1 op Rs2` |
 
 The `ALU` instruction uses the 3-bit Function field in bits `6`–`8` to
-select the operation defined in Section 2.4.
+select the operation defined in Section 2.5.
 
 The processor MUST implement all eight operations defined in Section 2.5.
 
@@ -281,7 +291,7 @@ The 13-bit Immediate field MUST be sign-extended to 32 bits before being
 used by the `ALUI` instruction.
 
 The `ALUI` instruction uses the 3-bit Function field in bits `6`–`8` to
-select the operation defined in Section 2.4.
+select the operation defined in Section 2.5.
 
 The processor MUST implement all eight operations defined in Section 2.5.
 
@@ -301,12 +311,12 @@ select the size of data loaded.
 
 | Function | Operation | Pseudocode |
 |---------:|-----------|--------|
-| `0` | Load word | Rd = readWord(Rs1 + Immediate) |
-| `1` | Load lower half word | 16 bit value 0-extended |
-| `2` | Load byte | 8 bit value - 0 extended |
-| `3` | Load upper half word |  |
-| `4` | Load lower half word sign extend | 16 bit value sign-extended |
-| `5` | Load byte sign extend|  |
+| `0` | Load word | 16 bit value |
+| `1` | Load lower half word | 16 bit value |
+| `2` | Load byte | 8 bit value |
+| `3` | Load upper half word | (16 bit value << 16) \| (existing value & 0xffff) |
+| `4` | Load lower half word sign extend | signextend(16 bit value) |
+| `5` | Load byte sign extend| signextend(8 bit value) |
 | `6` | Reserved |  |
 | `7` | Reserved |  |
 
@@ -356,7 +366,7 @@ select the size of data stored.
 
 | Name | Mnemonic | Opcode | Format | Pseudocode |
 |------|----------|-------:|:------:|------------|
-| Branch | `SET` | `0x06` | A | `Rd = 1 if Rs1 cond Rs2 else 0` |
+| Set | `SET` | `0x06` | A | `Rd = 1 if Rs1 cond Rs2 else 0` |
 
 
 The `SET` instruction uses the 3-bit Function field in bits `6`–`8` to
@@ -384,7 +394,7 @@ The `BRA` instruction uses the 3-bit Function field in bits `6`–`8` to
 select the condition to do the branch check.
 
 ***Note***
-For the purposes of this instruction Rd is not the destination register, instead the first of the 2 comparason registers, rs1 being the second.
+For the purposes of this instruction Rd is not the destination register, instead the first of the 2 comparison registers, rs1 being the second.
 
 | Function | Operation |
 |---------:|-----------|
@@ -397,44 +407,6 @@ For the purposes of this instruction Rd is not the destination register, instead
 | `6` | Reserved |
 | `7` | Reserved |
 
-## 4 Permissions
-### 4.1 Permission modes
+## 4 Extensions
 
-CSR addresses are 12 bits for a maximum of 4096.
-
-| Bits | Field |
-|-----:|--------|
-| 0-7 | Address |
-| 8-9 | Write |
-| 10-11 | Read |
-
-
-| Bits | Permission |
-|-----:|--------|
-| 00 | U |
-| 01 | S |
-| 10 | M |
-| 11 | None |
-
-**Reserved CSR's**
-| Address | CSR | Extention |
-|-----:|--------|--------|
-| `0x400` | Trap table vector | Base |
-| `0x401` | Trap cause | Base |
-| `0x402` | Trap value | Base |
-| `0x700` | Trap program counter | Base |
-
-
-**LUT ranges**
-
-00  non-maskable
-01  maskable
-10  
-11  
-
-**Reserved LUT addresses**
-| Address | CSR |
-|-----:|--------|
-| `0x01` | Illegal instruction |
-
-## 5 Extensions
+// Placeholder
