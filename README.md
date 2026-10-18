@@ -1,4 +1,4 @@
-# SR32 #
+# SR32 - (SIMPLE RISC) 32 #
 ## WORK IN PROGRESS ##
  Much of this project is heavily in WIP however most of the basics are ratified however not officially. 
 
