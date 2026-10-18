@@ -335,8 +335,8 @@ select the size of data loaded.
 | `0` | Load lower half word | Rd = immediate |
 | `1` | Load upper half word | Rd = immediate << 16 |
 | `2` | Load lower sign extended | Rd = signextend(immediate) |
-| `3` | Load upper (keep data) | Rd = (Rd & 0xffff0000) \| immediate |
-| `4` | Load lower (keep data) | Rd = (Rd & 0x0000ffff) \| (immediate << 16) |
+| `3` | Load upper (keep data) | Rd = (Rd & 0xffff) \| immediate << 16 |
+| `4` | Load lower (keep data) | Rd = (Rd & 0xffff0000) \| (immediate) |
 | `5` | Reserved |
 | `6` | Reserved |
 | `7` | Reserved |
