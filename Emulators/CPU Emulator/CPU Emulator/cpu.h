@@ -57,7 +57,7 @@ private:
     );
 
 public:
-    CPU();
+    // CPU();
 
     void clockCycle();
 

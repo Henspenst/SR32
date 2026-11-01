@@ -182,10 +182,10 @@
                    data = signExtend(immediate16, 16);
                    break;
                case 3:
-                   data = (readRegister(rs1) & 0xffff) | (immediate16 << 16);
+                   data = (readRegister(rd) & 0xffff) | (immediate16 << 16);
                    break;
                case 4:
-                   data = (readRegister(rs1) & 0xffff0000) | immediate16;
+                   data = (readRegister(rd) & 0xffff0000) | immediate16;
                    break;
                default:
                    exception(1, instructionReg);
