@@ -203,13 +203,13 @@
                uint32_t data = 0;
                switch (function) {
                case 0:
-                   writeMemory(readRegister(rs1) + immediate13, readRegister(rd), 4);
+                   writeMemory(readRegister(rs1) + signExtend(immediate13, 13), readRegister(rd), 4);
                    break;
                case 1:
-                   writeMemory(readRegister(rs1) + immediate13, readRegister(rd) & 0xffff, 2);
+                   writeMemory(readRegister(rs1) + signExtend(immediate13, 13), readRegister(rd) & 0xffff, 2);
                    break;
                case 2:
-                   writeMemory(readRegister(rs1) + immediate13, readRegister(rd) & 0xff, 1);
+                   writeMemory(readRegister(rs1) + signExtend(immediate13, 13), readRegister(rd) & 0xff, 1);
                    break;
                default:
                    exception(1, instructionReg);

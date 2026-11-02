@@ -230,6 +230,7 @@ def checkWord(word):
         return("value")
 
 def tokenSplit(line):
+    inChar = False
     word = ""
     output = []
     wordStart = 0
@@ -238,11 +239,13 @@ def tokenSplit(line):
             word += char
             output.append((word, checkWord(word), wordStart))
             wordStart = i + 2
-        elif char == " " or char == "\t":
+        elif (char == " " or char == "\t") and not inChar:
             output.append((word, checkWord(word), wordStart))
             word = ""
             wordStart = i + 2
         else:
+            if char == "'":
+                inChar = not inChar
             word += char
     output2 = []
     for word in output:
@@ -273,6 +276,12 @@ def tokenize(source, filename):
 
 def convertValue(string):
     string = string.strip()
+
+    if len(string) >= 2 and string[0] == "'" and string[-1] == "'":
+        char = string[1:-1]
+
+        return ord(char)
+
     return int(string, 0)
 
 def checkValidity(token, position, instruction):
@@ -459,11 +468,11 @@ def genBinaryDict(statements):
                 line += registerAliases[operand.text] << currentShift
                 currentShift += 5
             elif operandType == "imm13":
-                value = int(operand.text) & 0x1FFF
+                value = int(convertValue(operand.text)) & 0x1FFF
                 line |= value << currentShift
                 currentShift += 13
             elif operandType == "imm16":
-                line += int(operand.text) << currentShift + 2
+                line += int(convertValue(operand.text)) << currentShift + 2
                 currentShift += 18
             else:
                 pass    # IMPLEMENT error
