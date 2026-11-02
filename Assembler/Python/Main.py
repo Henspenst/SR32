@@ -87,6 +87,84 @@ aliases = {
     "bgeu": {"output": [["bra", "f5", "$rd", "$rs", "$offset"]], "input": ["rd", "rs", "offset"], "inputTypes": ["register", "register", "imm13"], "relative": True},
 }
 
+registerAliases = {
+    # Special
+    "zero": 0,
+    "ra": 1,
+    "sp": 2,
+    "gp": 3,
+    "fp": 4,
+
+    # Arguments / return values
+    "a0": 5,
+    "a1": 6,
+    "a2": 7,
+    "a3": 8,
+    "a4": 9,
+    "a5": 10,
+    "a6": 11,
+    "a7": 12,
+
+    # Temporaries
+    "t0": 13,
+    "t1": 14,
+    "t2": 15,
+    "t3": 16,
+    "t4": 17,
+    "t5": 18,
+    "t6": 19,
+    "t7": 20,
+    "t8": 21,
+
+    # Saved registers
+    "s0": 22,
+    "s1": 23,
+    "s2": 24,
+    "s3": 25,
+    "s4": 26,
+    "s5": 27,
+    "s6": 28,
+    "s7": 29,
+    "s8": 30,
+
+    # Program counter
+    "pc": 31,
+
+    "r0": 0,
+    "r1": 1,
+    "r2": 2,
+    "r3": 3,
+    "r4": 4,
+    "r5": 5,
+    "r6": 6,
+    "r7": 7,
+    "r8": 8,
+    "r9": 9,
+    "r10": 10,
+    "r11": 11,
+    "r12": 12,
+    "r13": 13,
+    "r14": 14,
+    "r15": 15,
+    "r16": 16,
+    "r17": 17,
+    "r18": 18,
+    "r19": 19,
+    "r20": 20,
+    "r21": 21,
+    "r22": 22,
+    "r23": 23,
+    "r24": 24,
+    "r25": 25,
+    "r26": 26,
+    "r27": 27,
+    "r28": 28,
+    "r29": 29,
+    "r30": 30,
+    "r31": 31
+
+}
+
 instructions = {"nop": {"opcode": 0, "args": []},
                 "alu": {"opcode": 1, "args": ["function", "register", "register", "register"]},
                 "alui": {"opcode": 2, "args": ["function", "register", "register", "imm13"]},
@@ -354,7 +432,7 @@ def solveAliases(statements):
                                     text=operand,
                                     location=tempStatement.location
                                 ))
-                            elif operand[:1] == "r":
+                            elif operand in registerAliases:
                                 nextInstruction.operands.append(token(
                                     type="register",
                                     text=operand,
@@ -378,7 +456,7 @@ def genBinaryDict(statements):
                 line += int(operand.text[1:]) << currentShift
                 currentShift += 3
             elif operandType == "register":
-                line += int(operand.text[1:]) << currentShift
+                line += registerAliases[operand.text] << currentShift
                 currentShift += 5
             elif operandType == "imm13":
                 value = int(operand.text) & 0x1FFF
