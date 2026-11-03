@@ -1,0 +1,3 @@
+:unsignedDivide # Unsigned divide (a0 dividend, a1 divisor)
+
+beq r0 a1 /zero_error # Check for zero
